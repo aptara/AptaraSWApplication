@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DateTimeDetails>
+  <Data>
+    <!--<UNCPath>C:\\Users\\rahul.wani\\AppData\\Local\\Articulate\\360\\</UNCPath>-->
+    <UNCPath>D:\Pushpraj Jagadale\Project\FileDateTimeDetails\Articulate Ranjeet\</UNCPath>
+
+    <FolderName>Logs\\</FolderName>
+    <!--<FileName>Storyline-CEF_20191205_114413.log</FileName>-->
+    <IgnorFiles>Articulate360_Stable_Install_20191203_053211_001_Articulate.360.Package.msi.log,Articulate360_Stable_Install_20191223_043155_001_Articulate.360.Package.msi.log</IgnorFiles>
+
+    <LastUpdatedDate>NULL</LastUpdatedDate>
+    <ErrorMessage></ErrorMessage>
+  </Data>
+  <Data>
+    <!--<UNCPath>\\\\PNF1-ENT-C-009\\Users\\rahul.wani\\AppData\\Local\\Articulate\\360\\</UNCPath>-->
+    <UNCPath>D:\Pushpraj Jagadale\Project\FileDateTimeDetails\Articulate Ranjeet\</UNCPath>
+    <FolderName>TestLogs\\</FolderName>
+    <!--<FileName>Storyline-CEF_20191205_114413.log</FileName>-->
+    <!--<FileName>Articulate360_Stable_Install_20191223_043155.log</FileName>-->
+    <IgnorFiles>Storyline_Stable_Install_20191203_053426_003_Articulate.Storyline.Package.msi.log,Storyline_Stable_Install_20191203_053426_002_Articulate.Storyline.ThumbnailHandler.Package.x64.msi.log</IgnorFiles>
+    <LastUpdatedDate>NULL</LastUpdatedDate>
+    <ErrorMessage></ErrorMessage>
+  </Data>
+  <!--<Data>
+    -->
+  <!--<UNCPath>\\\\PNF1-ENT-C-009\\Users\\rahul.wani\\AppData\\Local\\Articulate\\360\\</UNCPath>-->
+  <!--
+    <UNCPath>D:\Pushpraj Jagadale\Project\FileDateTimeDetails\Articulate Ranjeet\</UNCPath>
+      <FolderName>TestLogs 2\\</FolderName>
+    -->
+  <!--<FileName>Storyline-CEF_20191205_114413.log</FileName>-->
+  <!--
+    -->
+  <!--<FileName>Storyline_Stable_Install_20191203_053426.log</FileName>-->
+  <!--
+    <LastUpdatedDate>NULL</LastUpdatedDate>
+    <ErrorMessage></ErrorMessage>
+  </Data>-->
+
+  <!--<Data>
+    <UNCPath>MUM-AT-W5-DE013</UNCPath>
+    <FolderName>Logs/RCM/PortalErrorLogs</FolderName>
+    <FileName>Log.txt</FileName>
+    <LastUpdatedDate>NULL</LastUpdatedDate>
+    <ErrorMessage></ErrorMessage>
+  </Data>
+  <Data>
+    <UNCPath>MUM-AT-W4-DE002</UNCPath>
+    <FolderName>Logs</FolderName>
+    <FileName>RegLibraryOutput_5570_2099811891_2019-11-12.xml</FileName>
+    <LastUpdatedDate>NULL</LastUpdatedDate>
+    <ErrorMessage></ErrorMessage>
+  </Data>
+  <Data>
+    <UNCPath>MUM-AT-W4-DE002</UNCPath>
+    <FolderName>Logs</FolderName>
+    <FileName>Rohit.docx</FileName>
+    <LastUpdatedDate>NULL</LastUpdatedDate>
+    <ErrorMessage></ErrorMessage>
+  </Data>
+  <Data>
+    <UNCPath>MUM-AT-W4-DE002</UNCPath>
+    <FolderName>Logs</FolderName>
+    <FileName>RegLibraryOutput_5563_1458981560_2019-11-12.xml</FileName>
+    <LastUpdatedDate>NULL</LastUpdatedDate>
+    <ErrorMessage></ErrorMessage>
+  </Data>-->
+
+</DateTimeDetails>
