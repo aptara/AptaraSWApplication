@@ -28,99 +28,167 @@ namespace FileDateTimeDetails
 
         private void FileDateTimeDetails_Load(object sender, EventArgs e)
         {
-            ReadLogFilesData();
-            ReadFileDetails();
+            //ReadLogFilesData();
+            try
+            {
+                ReadFileDetails();
+            }
+            catch (Exception ex)
+            {
+                
+                throw ex;
+            }
+            
         }
         public void ReadFileDetails()
         {
             var connectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
-            string folderPath = (ConfigurationSettings.AppSettings["XMLFileLocation"]).ToString();
-            string xmlString = string.Empty;
             List<Data> listOfFileDetailsToSave = new List<Data>();
-            List<Data> OrderByAscending = new List<Data>();
-            List<Data> OrderByDescending = new List<Data>();
-
-
-            XmlRootAttribute xRoot = new XmlRootAttribute();
-            xRoot.ElementName = "DateTimeDetails";
-            xRoot.IsNullable = true;
-            XmlSerializer deserializer = new XmlSerializer(typeof(DateTimeDetails), xRoot);
-            //TextReader reader = new StreamReader(@"..\..\FileData.xml");
-            TextReader reader = new StreamReader(ConfigurationSettings.AppSettings["XMLFileDataPath"]);
-
-            object obj = deserializer.Deserialize(reader);
-            DateTimeDetails XmlData = (DateTimeDetails)obj;
-            for (int i = 0; i < XmlData.data.Count; i++)
+            string xmlString = string.Empty;
+            int isError = 1;
+            try
             {
+                //string folderPath = (ConfigurationSettings.AppSettings["XMLFileLocation"]).ToString();
+                string ignoreFileNames = (ConfigurationSettings.AppSettings["IgnoreFileName"]).ToString();
+                string[] ignoreFileNameList = ignoreFileNames.Split(',');
 
-                DirectoryInfo d = new DirectoryInfo(XmlData.data[i].FolderName);
-                string path = XmlData.data[i].UNCPath + XmlData.data[i].FolderName;       
+                XmlRootAttribute xRoot = new XmlRootAttribute();
+                xRoot.ElementName = "DateTimeDetails";
+                xRoot.IsNullable = true;
+                XmlSerializer deserializer = new XmlSerializer(typeof(DateTimeDetails), xRoot);
+                //TextReader reader = new StreamReader(@"..\..\FileData.xml");
+                TextReader reader = new StreamReader(ConfigurationSettings.AppSettings["XMLFileDataPath"]);
 
-
-                foreach (string file in Directory.EnumerateFiles(path, "*.log"))
+                object obj = deserializer.Deserialize(reader);
+                DateTimeDetails XmlData = (DateTimeDetails)obj;
+                for (int i = 0; i < XmlData.data.Count; i++)
                 {
-                    string IgnorFiles = XmlData.data[i].IgnorFiles;
-                    string[] ArrayIgnorFiles = IgnorFiles.Split(',');
-
-                    if (!ArrayIgnorFiles.Contains(Path.GetFileName(file)))
+                    xmlString = string.Empty;
+                    DirectoryInfo d = new DirectoryInfo(XmlData.data[i].FolderName);
+                    string path = XmlData.data[i].UNCPath + XmlData.data[i].FolderName;
+                    
+                    if (Directory.Exists(path))
                     {
-                        string FileName = Path.GetFileName(file);
-                        string[] lines = File.ReadAllLines(file);
-                        Data objData = new Data();
-                        objData.FolderName = "";
-                        objData.FileName = FileName;
-                        objData.UNCPath = folderPath;
-                        objData.FileUpdatedDate = new List<DateTime>();
-                        objData.MinMaxData = new List<MinMaxDates>();
-                        foreach (string line in lines)
+                        foreach (string file in Directory.EnumerateFiles(path, "*.log"))
                         {
-
-                            DateTime FindDate;
-                            string CurretLogFileLine = line;
-                            Match MatchRegulerExpression = Regex.Match(CurretLogFileLine, @"20\d{2}(-|\/)((0[1-9])|(1[0-2]))(-|\/)((0[1-9])|([1-2][0-9])|(3[0-1]))(T|\s)(([0-1][0-9])|(2[0-3])):([0-5][0-9]):([0-5][0-9])");
-                            if (MatchRegulerExpression == null)
+                            string IgnorFiles = XmlData.data[i].IgnorFiles;
+                            object fileName = Path.GetFileName(file);
+                            string output = Regex.Replace(Path.GetFileNameWithoutExtension(file), @"[\d-]", string.Empty).Replace("_",string.Empty);
+                            string[] ArrayIgnorFiles = IgnorFiles.Split(',');
+                            if (Array.IndexOf(ignoreFileNameList, output) < 0)
                             {
-                                MatchRegulerExpression = Regex.Match(CurretLogFileLine, @"^((((([0-1]?\d)|(2[0-8]))\/((0?\d)|(1[0-2])))|(29\/((0?[1,3-9])|(1[0-2])))|(30\/((0?[1,3-9])|(1[0-2])))|(31\/((0?[13578])|(1[0-2]))))\/((19\d{2})|([2-9]\d{3}))|(29\/0?2\/(((([2468][048])|([3579][26]))00)|(((19)|([2-9]\d))(([2468]0)|([02468][48])|([13579][26]))))))\s(([01]?\d)|(2[0-3]))(:[0-5]?\d){2}$");
-                            }
-                            if (MatchRegulerExpression == null)
-                            {
-                                MatchRegulerExpression = Regex.Match(CurretLogFileLine, @"^(?=\d)(?:(?:31(?!.(?:0?[2469]|11))|(?:30|29)(?!.0?2)|29(?=.0?2.(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00)))(?:\x20|$))|(?:2[0-8]|1\d|0?[1-9]))([-./])(?:1[012]|0?[1-9])\1(?:1[6-9]|[2-9]\d)?\d\d(?:(?=\x20\d)\x20|$))?(((0?[1-9]|1[012])(:[0-5]\d){0,2}(\x20[AP]M))|([01]\d|2[0-3])(:[0-5]\d){1,2})?$");
-                            }
-
-                            if (!string.IsNullOrEmpty(MatchRegulerExpression.Value))
-                            {
-                                FindDate = Convert.ToDateTime(MatchRegulerExpression.Value);
-                                if (!objData.FileUpdatedDate.Contains(FindDate))
+                                if (!ArrayIgnorFiles.Contains(fileName))
                                 {
-                                    objData.FileUpdatedDate.Add(FindDate);
+                                    string[] lines = File.ReadAllLines(file);
+                                    Data objData = new Data();
+                                    objData.FolderName = Environment.MachineName;
+                                    objData.FileName = fileName.ToString();
+                                    objData.UNCPath = path;
+                                    objData.FileUpdatedDate = new List<DateTime>();
+                                    objData.MinMaxData = new List<MinMaxDates>();
+                                    foreach (string line in lines)
+                                    {
+                                        DateTime FindDate;
+                                        string CurretLogFileLine = line;
+                                        Match MatchRegulerExpression = Regex.Match(CurretLogFileLine, @"20\d{2}(-|\/)((0[1-9])|(1[0-2]))(-|\/)((0[1-9])|([1-2][0-9])|(3[0-1]))(T|\s)(([0-1][0-9])|(2[0-3])):([0-5][0-9]):([0-5][0-9])");
+                                        if (MatchRegulerExpression == null)
+                                        {
+                                            MatchRegulerExpression = Regex.Match(CurretLogFileLine, @"^((((([0-1]?\d)|(2[0-8]))\/((0?\d)|(1[0-2])))|(29\/((0?[1,3-9])|(1[0-2])))|(30\/((0?[1,3-9])|(1[0-2])))|(31\/((0?[13578])|(1[0-2]))))\/((19\d{2})|([2-9]\d{3}))|(29\/0?2\/(((([2468][048])|([3579][26]))00)|(((19)|([2-9]\d))(([2468]0)|([02468][48])|([13579][26]))))))\s(([01]?\d)|(2[0-3]))(:[0-5]?\d){2}$");
+                                        }
+                                        if (MatchRegulerExpression == null)
+                                        {
+                                            MatchRegulerExpression = Regex.Match(CurretLogFileLine, @"^(?=\d)(?:(?:31(?!.(?:0?[2469]|11))|(?:30|29)(?!.0?2)|29(?=.0?2.(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00)))(?:\x20|$))|(?:2[0-8]|1\d|0?[1-9]))([-./])(?:1[012]|0?[1-9])\1(?:1[6-9]|[2-9]\d)?\d\d(?:(?=\x20\d)\x20|$))?(((0?[1-9]|1[012])(:[0-5]\d){0,2}(\x20[AP]M))|([01]\d|2[0-3])(:[0-5]\d){1,2})?$");
+                                        }
+
+                                        if (!string.IsNullOrEmpty(MatchRegulerExpression.Value))
+                                        {
+                                            FindDate = Convert.ToDateTime(MatchRegulerExpression.Value);
+                                            if (!objData.FileUpdatedDate.Contains(FindDate))
+                                            {
+                                                objData.FileUpdatedDate.Add(FindDate);
+                                            }
+                                        }
+                                    }
+
+                                    var groupByDates = objData.FileUpdatedDate.GroupBy(o => o.Date);
+                                    foreach (IGrouping<DateTime, DateTime> singleDates in groupByDates)
+                                    {
+                                        objData.MinMaxData.Add(new MinMaxDates { MinDate = singleDates.Min(), maxDate = singleDates.Max() });
+                                    }
+
+                                    listOfFileDetailsToSave.Add(objData);
                                 }
                             }
                         }
 
-                        var groupByDates = objData.FileUpdatedDate.GroupBy(o => o.Date);
-                        foreach (IGrouping<DateTime, DateTime> singleDates in groupByDates)
+                        if (listOfFileDetailsToSave.Count != 0)
                         {
-                            objData.MinMaxData.Add(new MinMaxDates { MinDate = singleDates.Min(), maxDate = singleDates.Max() });
+                            xmlString = Serialize(listOfFileDetailsToSave);
+                            isError = 0;
                         }
-
+                    }
+                    else
+                    {
+                        listOfFileDetailsToSave = new List<Data>();
+                        Data objData = new Data();
+                        objData.FolderName = "";
+                        objData.FileName = string.Empty;
+                        objData.UNCPath = "Machine Name - " + Environment.MachineName;
+                        objData.FileUpdatedDate = new List<DateTime>();
+                        objData.MinMaxData = new List<MinMaxDates>();
+                        objData.ErrorMessage = "File does not exists: "+ path;
+                        isError = 1;
                         listOfFileDetailsToSave.Add(objData);
+                        xmlString = Serialize(listOfFileDetailsToSave);
+                    }
+
+                    if (!String.IsNullOrEmpty(xmlString))
+                    {
+                        using (SqlConnection con = new SqlConnection(connectionString))
+                        {
+                            using (SqlCommand cmd = new SqlCommand("USP_DateTimeDetails", con))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+
+                                cmd.Parameters.Add("@InputXMLString", SqlDbType.VarChar).Value = xmlString;
+                                cmd.Parameters.Add("@IsError", SqlDbType.Int).Value = isError;
+                                con.Open();
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    
+                }
+
+                MessageBox.Show("Data Uploaded Successfully");
+            }
+            catch (Exception ex)
+            {
+                listOfFileDetailsToSave = new List<Data>();
+                Data objData = new Data();
+                objData.FolderName = "";
+                objData.FileName = string.Empty;
+                objData.UNCPath = "Machine Name - " + Environment.MachineName;
+                objData.FileUpdatedDate = new List<DateTime>();
+                objData.MinMaxData = new List<MinMaxDates>();
+                objData.ErrorMessage = ex.StackTrace + " " + ex.Message;
+                listOfFileDetailsToSave.Add(objData);
+                xmlString = Serialize(listOfFileDetailsToSave);
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("USP_DateTimeDetails", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@InputXMLString", SqlDbType.VarChar).Value = xmlString;
+                        cmd.Parameters.Add("@IsError", SqlDbType.Int).Value = 1;
+                        con.Open();
+                        cmd.ExecuteNonQuery();
                     }
                 }
-            }
-            xmlString = Serialize(listOfFileDetailsToSave);
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("USP_DateTimeDetails", con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@InputXMLString", SqlDbType.VarChar).Value = xmlString;
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
+                MessageBox.Show("Data is not updated due to error. " + objData.ErrorMessage);
             }
-
-            MessageBox.Show("Data Uploaded Successfully");
         }
 
 
